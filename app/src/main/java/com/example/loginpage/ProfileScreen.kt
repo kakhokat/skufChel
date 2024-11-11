@@ -3,6 +3,7 @@ package com.example.loginpage
 
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,122 +42,118 @@ fun ProfileScreen(
     navController: NavController
 ) {
     if (profileCardData != null) {
-        // State to track selected tab
+        // Состояние выбранной вкладки
         var selectedTab by remember { mutableStateOf(CourseStatus.IN_PROGRESS) }
         val filteredCourses = courseCards.filter { it.status == selectedTab }
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures { change, dragAmount ->
                         change.consume()
                         if (dragAmount < -50) {
-                            // Swipe right detected
+                            // Обнаружен свайп влево
                             navController.navigate("all_courses")
                         }
                     }
-                },
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                }
         ) {
-            // ProfileCard with onExitClick action
-            ProfileCard(
-                profileCardData = profileCardData,
-                onExitClick = {
-                    // Navigate back to LoginScreen
-                    navController.navigate("login") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Buttons to switch between course statuses
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(
-                    onClick = { selectedTab = CourseStatus.IN_PROGRESS },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedTab == CourseStatus.IN_PROGRESS) Color.Blue else Color.Gray
-                    )
-                ) {
-                    Text(text = "Прохожу")
-                }
-                Button(
-                    onClick = { selectedTab = CourseStatus.COMPLETED },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedTab == CourseStatus.COMPLETED) Color.Blue else Color.Gray
-                    )
-                ) {
-                    Text(text = "Пройденные")
-                }
-            }
-
-            // Display filtered courses
+            // Основной контент
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                if (filteredCourses.isEmpty()) {
-                    Text(
-                        text = "Нет курсов для отображения",
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                } else {
-                    filteredCourses.forEach { courseCard ->
-                        CourseCard(
-                            courseData = courseCard,
-                            navController = navController,
-                            onLikeClick = { /* Handle like action */ }
+                // Профиль пользователя
+                ProfileCard(
+                    profileCardData = profileCardData,
+                    onExitClick = {
+                        // Переход на экран входа
+                        navController.navigate("login") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Кнопки переключения статуса курсов
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        onClick = { selectedTab = CourseStatus.IN_PROGRESS },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedTab == CourseStatus.IN_PROGRESS) Color.Blue else Color.Gray
                         )
+                    ) {
+                        Text(text = "Прохожу")
+                    }
+                    Button(
+                        onClick = { selectedTab = CourseStatus.COMPLETED },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedTab == CourseStatus.COMPLETED) Color.Blue else Color.Gray
+                        )
+                    ) {
+                        Text(text = "Пройденные")
+                    }
+                }
+
+                // Список курсов
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    if (filteredCourses.isEmpty()) {
+                        Text(
+                            text = "Нет курсов для отображения",
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    } else {
+                        filteredCourses.forEach { courseCard ->
+                            CourseCard(
+                                courseData = courseCard,
+                                navController = navController,
+                                onLikeClick = { /* Обработка лайка */ }
+                            )
+                        }
                     }
                 }
             }
 
-            // Fixed Navigation Hint at the Bottom
-
-            Row(
+            // Навигационная кнопка, наложенная поверх контента
+            IconButton(
+                onClick = {
+                    navController.navigate("all_courses")
+                },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
             ) {
-                // Only the 3rd column (e.g., "Все курсы")
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    IconButton(
-                        onClick = {
-                            navController.navigate("all_courses")
-                        },
-                        modifier = Modifier.size(64.dp) // Increase the size
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.nav_arrow_right),
-                            contentDescription = "Go to All Courses",
-                            modifier = Modifier.size(48.dp) // Increase icon size
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(id = R.drawable.nav_arrow_right),
+                        contentDescription = "Все курсы",
+                        modifier = Modifier.size(48.dp)
+                    )
                     Text(
                         text = "Все курсы",
-                        fontSize = 20.sp, // Increase text size
+                        fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         }
     } else {
-        // Handle the case where profileCardData is null
-        Text("No profile data available")
+        // Обработка случая, когда данные профиля недоступны
+        Text("Нет данных профиля")
     }
 }

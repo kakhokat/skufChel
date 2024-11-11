@@ -1,9 +1,11 @@
 // AllCoursesScreen.kt
 package com.example.loginpage
 
+// Import for property delegation with 'by'
 import android.widget.Toast
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -51,15 +53,14 @@ fun AllCoursesScreen(
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
     var activeSort by remember { mutableStateOf(SortOption.NEW) }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = (44 * 0.5f).dp)
             .pointerInput(Unit) {
                 detectHorizontalDragGestures { change, dragAmount ->
                     change.consume()
                     if (dragAmount > 50) {
-                        // Swipe left detected
+                        // Swipe right detected
                         navController.navigate("profile") {
                             popUpTo("profile") { inclusive = true }
                         }
@@ -67,109 +68,107 @@ fun AllCoursesScreen(
                 }
             }
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Search bar and icon
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // Search field
-            TextField(
-                value = searchText,
-                onValueChange = { searchText = it },
-                placeholder = { Text(text = "Поиск...") },
-                modifier = Modifier
-                    .weight(1f)
-            )
-
-            Spacer(modifier = Modifier.width(20.dp))
-
-            // Search icon
-            IconButton(
-                onClick = {
-                    Toast.makeText(context, "Поиск: ${searchText.text}", Toast.LENGTH_SHORT).show()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon"
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Sort buttons
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            SortOption.values().forEach { sortOption ->
-                Button(
-                    onClick = {
-                        activeSort = sortOption
-                        Toast.makeText(context, "Сортировка: ${sortOption.description}", Toast.LENGTH_SHORT).show()
-                    },
-                    colors = buttonColors(
-                        containerColor = if (activeSort == sortOption) Color.Blue else Color.Gray
-                    ),
-                    modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
-                ) {
-                    Text(text = sortOption.title)
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Courses list
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
+                .padding(horizontal = (44 * 0.5f).dp)
         ) {
-            courseCards.forEach { courseCard ->
-                CourseCard(
-                    courseData = courseCard,
-                    navController = navController,
-                    onLikeClick = { /* Handle like action */ }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Search bar and icon
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Search field
+                TextField(
+                    value = searchText,
+                    onValueChange = { searchText = it },
+                    placeholder = { Text(text = "Поиск...") },
+                    modifier = Modifier
+                        .weight(1f)
                 )
+
+                Spacer(modifier = Modifier.width(20.dp))
+
+                // Search icon
+                IconButton(
+                    onClick = {
+                        Toast.makeText(context, "Поиск: ${searchText.text}", Toast.LENGTH_SHORT).show()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search Icon"
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Sort buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                SortOption.values().forEach { sortOption ->
+                    Button(
+                        onClick = {
+                            activeSort = sortOption
+                            Toast.makeText(context, "Сортировка: ${sortOption.description}", Toast.LENGTH_SHORT).show()
+                        },
+                        colors = buttonColors(
+                            containerColor = if (activeSort == sortOption) Color.Blue else Color.Gray
+                        ),
+                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                    ) {
+                        Text(text = sortOption.title)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Courses list
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                courseCards.forEach { courseCard ->
+                    CourseCard(
+                        courseData = courseCard,
+                        navController = navController,
+                        onLikeClick = { /* Handle like action */ }
+                    )
+                }
             }
         }
 
-        // Fixed Navigation Hint at the Bottom
-
-        Row(
+        // Navigation button overlaid on top of the content
+        IconButton(
+            onClick = {
+                navController.navigate("profile") {
+                    popUpTo("profile") { inclusive = true }
+                }
+            },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+                .align(Alignment.BottomStart)
+                .padding(16.dp)
         ) {
-            // Only the 1st column (e.g., "Профиль")
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                IconButton(
-                    onClick = {
-                        navController.navigate("profile") {
-                            popUpTo("profile") { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier.size(64.dp) // Increase the size
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.nav_arrow_left),
-                        contentDescription = "Back to Profile",
-                        modifier = Modifier.size(48.dp) // Increase icon size
-                    )
-                }
+                Icon(
+                    painter = painterResource(id = R.drawable.nav_arrow_left),
+                    contentDescription = "Back to Profile",
+                    modifier = Modifier.size(48.dp)
+                )
                 Text(
                     text = "Профиль",
-                    fontSize = 20.sp, // Increase text size
+                    fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -177,7 +176,7 @@ fun AllCoursesScreen(
     }
 }
 
-// Sort options enum
+// Definition of SortOption enum
 enum class SortOption(val title: String, val description: String) {
     NEW("Новые", "Сортировка по дате создания"),
     POPULAR("Популярные", "Сортировка по количеству записавшихся"),
