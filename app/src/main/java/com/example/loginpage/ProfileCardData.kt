@@ -7,3 +7,7 @@ data class ProfileCardData(
     val daysStreak: Int,
     val maxDaysStreak: Int
 )
+
+data class EmailData(
+    val email: String
+)

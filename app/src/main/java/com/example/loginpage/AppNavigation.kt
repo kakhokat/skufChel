@@ -25,6 +25,18 @@ fun AppNavigation(sharedViewModel: SharedViewModel) {
                 navController = navController
             )
         }
+        composable("registration") {
+            RegistrationScreen(
+                navController = navController,
+                sharedViewModel = sharedViewModel
+            )
+        }
+        composable("checkcode") {
+            CheckCode(
+                navController = navController,
+                sharedViewModel = sharedViewModel
+            )
+        }
         composable(
             route = "course/{courseId}",
             arguments = listOf(navArgument("courseId") { type = NavType.StringType })

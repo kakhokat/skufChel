@@ -1,0 +1,21 @@
+{
+  "http_server": {
+    "port": 8080,
+    "timeout_seconds": 5
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "root",
+    "username": "root",
+    "password": "root",
+    "sslmode": "disable"
+  },
+  "salt": "123jnsdgjlaikjrioajeoirjogdjoiajriojsdiogjoiajeroijoiqeoioijofjgoia",
+  "kafka":{
+        "host": "localhost",
+        "port":"9092",
+        "topic":"kafka",
+        "partition":0
+    }
+}

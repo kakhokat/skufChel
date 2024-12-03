@@ -2,6 +2,18 @@
 package com.example.loginpage
 
 import android.widget.Toast
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.plugins.logging.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import io.ktor.client.request.*
+import io.ktor.http.*
+import kotlinx.coroutines.withContext
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,16 +36,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import io.ktor.client.call.body
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ErrorResponse(
+    val error: String
+)
 
 @Composable
 fun LoginScreen(
     navController: NavController? = null,
     sharedViewModel: SharedViewModel
 ) {
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+
+    val client = HttpClient {
+        install(ContentNegotiation) {
+            json()
+        }
+        install(Logging) {
+            level = LogLevel.ALL
+        }
+    }
 
 
     Column(
@@ -80,8 +108,8 @@ fun LoginScreen(
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 8.dp),
-                    onClick = { /* Действие для регистрации */ },
-                    enabled = false
+                    onClick = {navController?.navigate("registration")},
+                    enabled = true
                 ) {
                     Text("Регистрация")
                 }
@@ -98,12 +126,11 @@ fun LoginScreen(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
             // Поле ввода логина
             TextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username") },
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next  // Настройка действия "Next" для клавиши Enter
@@ -141,23 +168,40 @@ fun LoginScreen(
             // Кнопка входа
             Button(
                 onClick = {
-                    focusManager.clearFocus()
-                    if (username.isNotEmpty() && password.isNotEmpty()) {
-                        val profileCardData = ProfileCardData(
-                            nickName = username,
-                            profileImageRes = R.drawable.logo,
-                            coursesCompleted = 0,
-                            daysStreak = 0,
-                            maxDaysStreak = 0
-                        )
-                        sharedViewModel.profileCardData.value = profileCardData
-                        navController?.navigate("profile")
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Заполните поля логин и пароль",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val response: HttpResponse = client.post("http://10.0.2.2:8080/courses/auth/signin") {
+                                contentType(ContentType.Application.FormUrlEncoded)
+                                setBody("email=$email&password=$password")
+                            }
+
+                            withContext(Dispatchers.Main) {
+                                if (response.status.value == 200) {
+                                    val profileCardData = ProfileCardData(
+                                        nickName = email,
+                                        profileImageRes = R.drawable.logo,
+                                        coursesCompleted = 0,
+                                        daysStreak = 0,
+                                        maxDaysStreak = 0
+                                    )
+                                    sharedViewModel.profileCardData.value = profileCardData
+                                    navController?.navigate("profile")
+                                } else {
+                                    // Десериализация JSON-ответа
+                                    try {
+                                        val errorResponse: ErrorResponse = response.body()
+                                        Toast.makeText(context, "Ошибка входа: ${errorResponse.error}", Toast.LENGTH_SHORT).show()
+                                    } catch (e: Exception) {
+                                        val errorText = response.bodyAsText() // Получение тела как строки
+                                        Toast.makeText(context, "Неизвестная ошибка: $errorText", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "Не удалось подключиться к серверу: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

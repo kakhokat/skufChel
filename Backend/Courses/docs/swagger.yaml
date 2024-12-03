@@ -1,0 +1,574 @@
+basePath: /
+definitions:
+  models.Answer:
+    properties:
+      answer:
+        type: string
+    type: object
+  models.CheckMessage:
+    properties:
+      checkKey:
+        type: string
+      mail:
+        type: string
+    type: object
+  models.Course:
+    properties:
+      countLessons:
+        type: integer
+      countUsers:
+        type: integer
+      courseId:
+        type: integer
+      creatorId:
+        type: integer
+      description:
+        type: string
+      lessons:
+        items:
+          $ref: '#/definitions/models.Lesson'
+        type: array
+      likes:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Error:
+    properties:
+      error:
+        type: string
+    type: object
+  models.Lesson:
+    properties:
+      description:
+        type: string
+      lessonId:
+        type: integer
+      likes:
+        type: integer
+      name:
+        type: string
+      test:
+        $ref: '#/definitions/models.Test'
+      video:
+        $ref: '#/definitions/models.Video'
+    type: object
+  models.LessonFull:
+    properties:
+      description:
+        type: string
+      isLiked:
+        type: boolean
+      isPassed:
+        type: boolean
+      lessonId:
+        type: integer
+      likes:
+        type: integer
+      name:
+        type: string
+      test:
+        $ref: '#/definitions/models.Test'
+      video:
+        $ref: '#/definitions/models.Video'
+    type: object
+  models.ResultOfAnswering:
+    properties:
+      isCorrect:
+        type: boolean
+    type: object
+  models.Test:
+    properties:
+      answers:
+        type: string
+      current_answer:
+        type: string
+      question:
+        type: string
+      testId:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      birthday:
+        type: string
+      email:
+        type: string
+      isCreator:
+        type: boolean
+      name:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.Video:
+    properties:
+      id:
+        type: integer
+      url:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API Server 4 Courses
+  title: Courses API
+paths:
+  /courses/api/course/:
+    get:
+      consumes:
+      - application/json
+      description: get courses by search
+      operationId: get courses by search
+      parameters:
+      - description: search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Course'
+            type: array
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetCourses
+      tags:
+      - courses
+  /courses/api/course/{courseId}:
+    get:
+      consumes:
+      - application/json
+      description: get full course
+      operationId: get full course
+      parameters:
+      - description: courseId
+        in: path
+        name: courseId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Course'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetFullCourse
+      tags:
+      - courses
+  /courses/api/course/{courseId}/lesson/{lessonId}:
+    get:
+      consumes:
+      - application/json
+      description: get lesson by id
+      operationId: get lesson by id
+      parameters:
+      - description: lessonId
+        in: path
+        name: lessonId
+        required: true
+        type: integer
+      - description: courseId
+        in: path
+        name: courseId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LessonFull'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetLesson
+      tags:
+      - lessons
+  /courses/api/course/{courseId}/lesson/{lessonId}/answer:
+    post:
+      consumes:
+      - application/json
+      description: answer test in lesson
+      operationId: answer test in lesson
+      parameters:
+      - description: lessonId
+        in: path
+        name: lessonId
+        required: true
+        type: integer
+      - description: courseId
+        in: path
+        name: courseId
+        required: true
+        type: integer
+      - description: answer
+        in: body
+        name: answer
+        required: true
+        schema:
+          $ref: '#/definitions/models.Answer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResultOfAnswering'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: AnswerTest
+      tags:
+      - lessons
+  /courses/api/course/{courseId}/like:
+    post:
+      consumes:
+      - application/json
+      description: like course or dislike
+      operationId: like course
+      parameters:
+      - description: courseId
+        in: path
+        name: courseId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: bool
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: LikeCourse
+      tags:
+      - courses
+  /courses/api/course/{courseId}/subscribe:
+    post:
+      consumes:
+      - application/json
+      description: subscribe course
+      operationId: subscribe course
+      parameters:
+      - description: courseId
+        in: path
+        name: courseId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: bool
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: SubscribeCourse
+      tags:
+      - courses
+  /courses/api/creator/:
+    delete:
+      consumes:
+      - application/json
+      description: delete course
+      operationId: delete course
+      parameters:
+      - description: search
+        in: query
+        name: input
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteCourse
+      tags:
+      - creator
+    get:
+      consumes:
+      - application/json
+      description: get creator courses
+      operationId: get creator courses
+      parameters:
+      - description: search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Course'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetCreatorCourses
+      tags:
+      - creator
+    post:
+      consumes:
+      - application/json
+      description: create course
+      operationId: create course
+      parameters:
+      - description: Course
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Course'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateCourse
+      tags:
+      - creator
+  /courses/api/personal/creator:
+    patch:
+      consumes:
+      - application/json
+      description: set creator
+      operationId: set creator
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: SetCreator
+      tags:
+      - personal
+  /courses/api/userinfo/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get user by id
+      operationId: get-user-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: GetUsedById
+      tags:
+      - userinfo
+  /courses/auth/checkkey:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: checkkey
+      operationId: checkkey
+      parameters:
+      - description: CheckKey
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.CheckMessage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: CheckKey
+      tags:
+      - auth
+  /courses/auth/signin:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: login
+      operationId: login
+      parameters:
+      - description: Email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: SignIn
+      tags:
+      - auth
+  /courses/auth/signup:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: register
+      operationId: register
+      parameters:
+      - description: username
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: password
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: birthday
+        in: formData
+        name: birthday
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: SignUp
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
