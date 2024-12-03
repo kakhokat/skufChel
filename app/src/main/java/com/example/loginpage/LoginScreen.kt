@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.ktor.client.call.body
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable
 data class ErrorResponse(
@@ -177,6 +179,8 @@ fun LoginScreen(
 
                             withContext(Dispatchers.Main) {
                                 if (response.status.value == 200) {
+                                    val jsonResponse = response.bodyAsText()
+                                    val token = parseToken(jsonResponse) // Метод для извлечения токена
                                     val profileCardData = ProfileCardData(
                                         nickName = email,
                                         profileImageRes = R.drawable.logo,
@@ -185,6 +189,7 @@ fun LoginScreen(
                                         maxDaysStreak = 0
                                     )
                                     sharedViewModel.profileCardData.value = profileCardData
+                                    sharedViewModel.token.value = token
                                     navController?.navigate("profile")
                                 } else {
                                     // Десериализация JSON-ответа
@@ -210,4 +215,10 @@ fun LoginScreen(
             }
         }
     }
+}
+
+// Метод для извлечения токена из JSON
+private fun parseToken(jsonResponse: String): String {
+    val jsonObject = kotlinx.serialization.json.Json.parseToJsonElement(jsonResponse).jsonObject
+    return jsonObject["token"]?.jsonPrimitive?.content ?: ""
 }
