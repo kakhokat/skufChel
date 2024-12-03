@@ -1,0 +1,884 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API Server 4 Courses",
+        "title": "Courses API",
+        "contact": {}
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/courses/api/course/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get courses by search",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "summary": "GetCourses",
+                "operationId": "get courses by search",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "search",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Course"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/api/course/{courseId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get full course",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "summary": "GetFullCourse",
+                "operationId": "get full course",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "courseId",
+                        "name": "courseId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Course"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/api/course/{courseId}/lesson/{lessonId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get lesson by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lessons"
+                ],
+                "summary": "GetLesson",
+                "operationId": "get lesson by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "lessonId",
+                        "name": "lessonId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "courseId",
+                        "name": "courseId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.LessonFull"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/api/course/{courseId}/lesson/{lessonId}/answer": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "answer test in lesson",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lessons"
+                ],
+                "summary": "AnswerTest",
+                "operationId": "answer test in lesson",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "lessonId",
+                        "name": "lessonId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "courseId",
+                        "name": "courseId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "answer",
+                        "name": "answer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Answer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResultOfAnswering"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/api/course/{courseId}/like": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "like course or dislike",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "summary": "LikeCourse",
+                "operationId": "like course",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "courseId",
+                        "name": "courseId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "bool"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/api/course/{courseId}/subscribe": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "subscribe course",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courses"
+                ],
+                "summary": "SubscribeCourse",
+                "operationId": "subscribe course",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "courseId",
+                        "name": "courseId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "bool"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/api/creator/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get creator courses",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "GetCreatorCourses",
+                "operationId": "get creator courses",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "search",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Course"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create course",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "CreateCourse",
+                "operationId": "create course",
+                "parameters": [
+                    {
+                        "description": "Course",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Course"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete course",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "DeleteCourse",
+                "operationId": "delete course",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "search",
+                        "name": "input",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/api/personal/creator": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "set creator",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "personal"
+                ],
+                "summary": "SetCreator",
+                "operationId": "set creator",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/api/userinfo/{id}": {
+            "get": {
+                "description": "get user by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "userinfo"
+                ],
+                "summary": "GetUsedById",
+                "operationId": "get-user-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/auth/checkkey": {
+            "post": {
+                "description": "checkkey",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "CheckKey",
+                "operationId": "checkkey",
+                "parameters": [
+                    {
+                        "description": "CheckKey",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CheckMessage"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/auth/signin": {
+            "post": {
+                "description": "login",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "SignIn",
+                "operationId": "login",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Email",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/auth/signup": {
+            "post": {
+                "description": "register",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "SignUp",
+                "operationId": "register",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "birthday",
+                        "name": "birthday",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Answer": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CheckMessage": {
+            "type": "object",
+            "properties": {
+                "checkKey": {
+                    "type": "string"
+                },
+                "mail": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Course": {
+            "type": "object",
+            "properties": {
+                "countLessons": {
+                    "type": "integer"
+                },
+                "countUsers": {
+                    "type": "integer"
+                },
+                "courseId": {
+                    "type": "integer"
+                },
+                "creatorId": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "lessons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Lesson"
+                    }
+                },
+                "likes": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Error": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Lesson": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "lessonId": {
+                    "type": "integer"
+                },
+                "likes": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "test": {
+                    "$ref": "#/definitions/models.Test"
+                },
+                "video": {
+                    "$ref": "#/definitions/models.Video"
+                }
+            }
+        },
+        "models.LessonFull": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "isLiked": {
+                    "type": "boolean"
+                },
+                "isPassed": {
+                    "type": "boolean"
+                },
+                "lessonId": {
+                    "type": "integer"
+                },
+                "likes": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "test": {
+                    "$ref": "#/definitions/models.Test"
+                },
+                "video": {
+                    "$ref": "#/definitions/models.Video"
+                }
+            }
+        },
+        "models.ResultOfAnswering": {
+            "type": "object",
+            "properties": {
+                "isCorrect": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.Test": {
+            "type": "object",
+            "properties": {
+                "answers": {
+                    "type": "string"
+                },
+                "current_answer": {
+                    "type": "string"
+                },
+                "question": {
+                    "type": "string"
+                },
+                "testId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "birthday": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "isCreator": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Video": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
